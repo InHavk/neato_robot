@@ -83,6 +83,7 @@ class NeatoNode:
         r = rospy.Rate(5)
         self.robot.requestScan()
         while not rospy.is_shutdown():
+            print(self.cmd_vel)
             # prepare laser scan
             scan.header.stamp = rospy.Time.now()    
             #self.robot.requestScan()
@@ -138,8 +139,9 @@ class NeatoNode:
             r.sleep()
 
         # shut down
-        self.robot.setLDS("off")
-        self.robot.setTestMode("off") 
+        #self.robot.setLDS("off")
+        #self.robot.setTestMode("off")
+        self.robot.exit() 
 
     def cmdVelCb(self,req):
         x = req.linear.x * 1000

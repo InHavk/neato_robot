@@ -115,11 +115,13 @@ xv11_charger_info = [ "FuelPercent",
 class xv11():
 
     def __init__(self, port="/dev/ttyUSB0"):
-        self.port = serial.Serial(port,115200)
+        self.port = serial.Serial(port,115200, timeout=0)
         # Storage for motor and sensor information
         self.state = {"LeftWheel_PositionInMM": 0, "RightWheel_PositionInMM": 0}
         self.stop_state = True
         # turn things on
+        self.port.write("\n")
+        self.port.flushInput()
         self.setTestMode("on")
         self.setLDS("on")
 
@@ -197,9 +199,10 @@ class xv11():
                 line = self.port.readline()
             except:
                 return [0,0]
-        for i in range(len(xv11_motor_info)):
+        raw_lines = self.port.readlines()
+        for i in raw_lines:
             try:
-                values = self.port.readline().split(",")
+                values = i.split(",")
                 self.state[values[0]] = int(values[1])
             except:
                 pass
@@ -214,9 +217,10 @@ class xv11():
                 line = self.port.readline()
             except:
                 return
-        for i in range(len(xv11_analog_sensors)):
+        raw_lines = self.port.readlines()
+        for i in raw_lines:
             try:
-                values = self.port.readline().split(",")
+                values = i.split(",")
                 self.state[values[0]] = int(values[1])
             except:
                 pass
@@ -230,9 +234,10 @@ class xv11():
                 line = self.port.readline()
             except:
                 return
-        for i in range(len(xv11_digital_sensors)):
+        raw_lines = self.port.readlines()
+        for i in raw_lines:
             try:
-                values = self.port.readline().split(",")
+                values = i.split(",")
                 self.state[values[0]] = int(values[1])
             except:
                 pass
@@ -243,9 +248,10 @@ class xv11():
         line = self.port.readline()
         while line.split(",")[0] != "Label":
             line = self.port.readline()
-        for i in range(len(xv11_charger_info)):
-            values = self.port.readline().split(",")
+        raw_lines = self.port.readlines()
+        for i in raw_lines:
             try:
+                values = i.split(",")
                 self.state[values[0]] = int(values[1])
             except:
                 pass
